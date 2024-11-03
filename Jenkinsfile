@@ -1,5 +1,8 @@
 pipeline {
     agent none
+    tools {
+          maven 'maven 3.9.9'
+    }
         stages {
             stage('Checkout') {
                 agent {label 'Java1'}
