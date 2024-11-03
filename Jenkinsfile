@@ -2,7 +2,7 @@ pipeline {
     agent none
         stages {
             stage('Checkout') {
-                agent {label 'Java2'}
+                agent {label 'Java1'}
                 steps {
                       git branch: 'master', 'https://github.com/Dbshiva/war-web-project'
                       echo 'Checked out data'
