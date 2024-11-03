@@ -4,7 +4,7 @@ pipeline {
             stage('Checkout') {
                 agent {label 'Java1'}
                 steps {
-//                      git branch: 'master', 'https://github.com/Dbshiva/war-web-project'
+//                      git url: https://github.com/Dbshiva/war-web-project'
                       echo 'Checked out data'
                 }
             }
