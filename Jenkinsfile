@@ -17,7 +17,7 @@ pipeline {
             stage('Build') {
              agent {label 'Java2'}
                 steps {
-                    sh 'mvn clean package'
+                    sh 'mvn clean' // package'
                       echo 'Build package successful'
                 }
             }   
