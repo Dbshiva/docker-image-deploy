@@ -3,7 +3,7 @@ pipeline {
     parameters {
 			string (name:'USER_ID' , defaulValue:'Jenkins_user')
 			choice choices: ['Dev', 'Test', 'Prod'], name: 'Role'
-			booleanParam(name: 'DEBUG_BUILD', defaultValue: true
+			booleanParam(name: 'DEBUG_BUILD', defaultValue: true)
 }
     triggers {
         cron('0 */4 * * 1-5')
