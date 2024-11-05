@@ -8,9 +8,14 @@ pipeline {
     triggers {
         cron('0 */4 * * 1-5')
         pollSCM('0 */4 * * 1-5')
-        
-    }
-    
+}
+  environment {
+	SSH_KEY=credentials('ssh-keys')
+	GITHUB_CRED=credentials('Github_cred')
+        MY_STRING = "${params.USER_ID}"
+        MY_CHOICE = "${params.Role}"
+        MY_BOOLEAN = "${params.DEBUG_BUILD}"
+    }  
     tools {
           maven 'maven 3.9.9'
     }
@@ -41,4 +46,16 @@ pipeline {
                 }
             } 
         }
+	post { 
+		always {
+    			subject: 'Jenkins $JOB_NAME'run status,
+   			emailext body: '''
+				jobname :  '$JOB_NAME'
+           			build no:  '$BUILD_NUMBER'
+            			job URL: '$BUILD_URL'
+            			build status: '$BUILD_STATUS',
+	    			subject: '$JOB_NAME' , 
+	    			to: 'dbshivanand003@gmail.com'
+	  	}
+    	}	
 }
