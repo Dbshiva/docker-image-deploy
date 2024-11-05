@@ -49,7 +49,7 @@ pipeline {
 	post { 
 		always {
     			subject: 'Jenkins $JOB_NAME' run status',
-   			emailext body: '''
+   			emailext body:
 				jobname :  '$JOB_NAME'
            			build no:  '$BUILD_NUMBER'
             			job URL: '$BUILD_URL'
