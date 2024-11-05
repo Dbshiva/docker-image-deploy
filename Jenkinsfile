@@ -48,7 +48,7 @@ pipeline {
         }
 	post { 
 		always {
-    			subject: '$JOB_NAME',
+    			subject: '${JOB_NAME}',
    			emailext body:
 				jobname :  '$JOB_NAME'
            			build no:  '$BUILD_NUMBER'
