@@ -24,7 +24,7 @@ pipeline {
                 agent {label 'Java1'}
                 steps {
 //                      git url: https://github.com/Dbshiva/war-web-project'
-                      echo 'Checked out data'
+                        echo 'Checked out data'
                 }
             }
             stage('Test') {
