@@ -1,61 +1,106 @@
+
 pipeline {
     agent none
-    parameters {
-			string (name:'USER_ID' , defaulValue:'Jenkins_user')
-			choice choices: ['Dev', 'Test', 'Prod'], name: 'Role'
-			booleanParam(name: 'DEBUG_BUILD', defaultValue: true)
+	parameters {
+			string defaultValue: 'Jenkins', name: 'env_var1'
+			choice choices: ['Dev', 'Test', 'Prod'], name: 'env_var2'
+			booleanParam defaultValue: true, name: 'env_var3'
 }
-    triggers {
-        cron('0 */4 * * 1-5')
-        pollSCM('0 */4 * * 1-5')
-}
-  environment {
-	SSH_KEY=credentials('ssh-keys')
-	GITHUB_CRED=credentials('Github_cred')
-        MY_STRING = "${params.USER_ID}"
-        MY_CHOICE = "${params.Role}"
-        MY_BOOLEAN = "${params.DEBUG_BUILD}"
-    }  
-    tools {
-          maven 'maven 3.9.9'
+
+    triggers{
+			cron '30 * * * *'
+			pollSCM '30 * * * *'
+		}
+		
+	environment {
+	AWS_ACCESS_KEY=credentials('aws_access_key')
+	GITHUB_CRED=credentials('github_new')
+        MY_STRING = "${params.env_var1}"
+        MY_CHOICE = "${params.env_var2}"
+        MY_BOOLEAN = "${params.env_var3}"
     }
-        stages {
-            stage('Checkout') {
-                agent {label 'Java1'}
-                steps {
-//                      git url: https://github.com/Dbshiva/war-web-project'
-                        echo 'Checked out data'
+    stages {
+        
+        stage('checkout') {
+            agent{label 'java'}
+			when{
+				anyOf{
+						branch 'main'
+						branch 'dev1'
+				}
+			}
+            steps {
+                    git branch: 'main', url: 'https://github.com/Veena-devops/java-example.git'
+                    }
                 }
+        stage('Test') {
+				agent{label 'java'}
+                    steps {
+               
+						echo 'Running unit test and integration test'
+						echo "Environment Variable MY_STRING: ${MY_STRING}"
+						echo "Environment Variable MY_CHOICE: ${MY_CHOICE}"
+						echo "Environment Variable MY_BOOLEAN: ${MY_BOOLEAN}"
+                    }
+                }
+            
+        
+        
+        
+        stage('Build') {
+            agent {label 'Agent-2'}
+             when { 
+                    
+                    expression { 
+				(currentBuild.result == null || currentBuild.result == 'SUCCESS') 
+			} 
+                
             }
-            stage('Test') {
-                 agent {label 'Java1'}
-                 steps {
-                      echo 'Test run successful'
+            
+				steps {
+                        
+						// Using Global Variables
+						echo "jobname :  '$JOB_NAME'"
+						echo "build no:  '$BUILD_NUMBER'"
+						echo "job URL: '$BUILD_URL'"
+						echo "Jenkins URL: '$JENKINS_URL'"
+                    }
                 }
+				
+            stage('Push') {
+				agent{label 'Agent-2'}
+				when {
+                expression { 
+				(currentBuild.result == null || currentBuild.result == 'SUCCESS') 
+		} 
             }
-            stage('Build') {
-                 agent {label 'Java2'}
-                 steps {
-                      echo 'Build package successful'
+                    steps {
+                        echo 'Pusing artifact to artifactory'
+			sh 'echo $AWS_ACCESS_KEY'			
+			sh 'echo USERNAME:PASSWORD:: $GITHUB_CRED'
+			sh 'echo username: $GITHUB_CRED_USR'
+			sh 'echo password: $GITHUB_CRED_PSW'
+                    }
                 }
-            }   
-            stage('Deploy_to_tomcat') {
-                agent {label 'Java2'}
-                steps {
-                    echo 'Web app deployed successfully'
-                }
-            } 
-        }
-	post { 
-		always {
-    			subject: '${JOB_NAME}',
-   			emailext body:
-				jobname :  '$JOB_NAME'
-           			build no:  '$BUILD_NUMBER'
-            			job URL: '$BUILD_URL'
-            			build status: '$BUILD_STATUS',
-	    			subject: '$JOB_NAME' , 
-	    			to: 'dbshivanand003@gmail.com'
-	  	}
-    	}	
-}
+            
+    }
+    
+	
+	post {
+        
+		always {	    
+				
+			emailext body: '''
+			jobname :  '$JOB_NAME'
+            build no:  '$BUILD_NUMBER'
+            job URL: '$BUILD_URL'
+            build status: '$BUILD_STATUS'
+
+             ''', subject: '$JOB_NAME' , from: 'jenkins@example.com', to: 'vlakkamraju11@gmail.com'
+
+			}
+		}
+	}
+
+
+
