@@ -9,7 +9,7 @@ pipeline {
         		cron('H */4 * * 1-5')
         		pollSCM('H */4 * * 1-5')
 	    }
-  	    envir
+  	    environment {
         		MY_STRING = "${params.USER_ID}"
         		MY_CHOICE = "${params.Role}"
         		MY_BOOLEAN = "${params.DEBUG_BUILD}"
