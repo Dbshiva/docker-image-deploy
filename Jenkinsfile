@@ -21,7 +21,7 @@ pipeline {
                 agent {label 'Java1'}
 			when{
 				anyOf{
-						branch 'main'
+						branch 'master'
 						branch 'dev'
 				}
 			}
