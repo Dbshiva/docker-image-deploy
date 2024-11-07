@@ -1,4 +1,4 @@
-1 pipeline {
+pipeline {
     agent none
     	    parameters {
 			string (name:'USER_ID' , defaultValue:'Jenkins_user')
