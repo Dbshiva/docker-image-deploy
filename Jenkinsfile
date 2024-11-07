@@ -1,33 +1,33 @@
-pipeline {
+1 pipeline {
     agent none
-    parameters {
+    	    parameters {
 			string (name:'USER_ID' , defaultValue:'Jenkins_user')
 			choice choices: ['Dev', 'Test', 'Prod'], name: 'Role'
 			booleanParam(name: 'DEBUG_BUILD', defaultValue: true)
-}
-    triggers {
-        cron('H */4 * * 1-5')
-        pollSCM('H */4 * * 1-5')
-}
-  environment {
-	SSH_KEY=credentials('ssh-keys')
-	GITHUB_CRED=credentials('Github_cred')
-        MY_STRING = "${params.USER_ID}"
-        MY_CHOICE = "${params.Role}"
-        MY_BOOLEAN = "${params.DEBUG_BUILD}"
-    }  
-        stages {
+	    }
+    	    triggers {
+        		cron('H */4 * * 1-5')
+        		pollSCM('H */4 * * 1-5')
+	    }
+  	    environment {
+			SSH_KEY=credentials('ssh-keys')
+			GITHUB_CRED=credentials('Github_cred')
+        		MY_STRING = "${params.USER_ID}"
+        		MY_CHOICE = "${params.Role}"
+        		MY_BOOLEAN = "${params.DEBUG_BUILD}"
+    	    }  
+     stages {
             stage('Checkout') {
                 agent {label 'Java1'}
 			when{
-				anyOf{
-						branch 'master'
-						branch 'dev'
-				}
+			      anyOf{
+				     branch 'master'
+				     branch 'dev'
+			      }
 			}
                 steps {
-		      git branch: 'main', url: 'https://github.com/Veena-devops/java-example.git'
-                      echo 'Checked out data'
+		       git branch: 'master', url: 'https://github.com/Dbshiva/war-web-project.git'
+                       echo 'Checked out data'
                 }
             }
             stage('Test') {
@@ -41,21 +41,20 @@ pipeline {
             }
             stage('Build') {
                  agent {label 'Java2'}
-		when {      
-                    expression { 
-				(currentBuild.result == null || currentBuild.result == 'SUCCESS') 
-			} 
-                
-            }
+			when {      
+                    		expression { 
+					   (currentBuild.result == null || currentBuild.result == 'SUCCESS') 
+		    		} 
+           		}
                  steps {
                       echo 'Build package successful'
-                }
+                 }
             }   
             stage('Deploy_to_tomcat') {
                 agent {label 'Java2'}
 			when {
                 		expression { 
-					(currentBuild.result == null || currentBuild.result == 'SUCCESS') 
+					   (currentBuild.result == null || currentBuild.result == 'SUCCESS') 
 				} 
             		}
                 steps {
@@ -67,8 +66,8 @@ pipeline {
                 }
             } 
         }
-	post { 
-		always {
+		post { 
+		  	always {
     	 			emailext body:'''
 				jobname :'$JOB_NAME'
            			build no:'$BUILD_NUMBER'
@@ -77,6 +76,6 @@ pipeline {
 				''',
 	    			subject:'$JOB_NAME' , 
 	    			to: 'dbshivanand003@gmail.com'
-	  	}
-    	}	
+	  		}
+    		}	
 }
